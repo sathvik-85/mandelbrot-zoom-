@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mandelbrot Zoom</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- GL canvas (GPU renderer, shown at zoom < ~5e10) -->
+  <canvas id="canvas-gl"></canvas>
+  <!-- 2D canvas (WASM renderer, shown at deep zoom) -->
+  <canvas id="canvas"></canvas>
+  <!-- Transparent overlay so mouse/touch events work regardless of which canvas is active -->
+  <div id="evt"></div>
+
+  <!-- HUD: coords bottom-left -->
+  <div id="hud">
+    <span id="coords"></span>
+  </div>
+
+  <!-- Control panel: top-right -->
+  <div id="panel">
+    <div id="top-row">
+      <button id="btn-home" title="Zoom all the way out">⌂ Reset</button>
+      <div id="pal-row">
+        <button class="pal-btn active" data-pal="0">Nebula</button>
+        <button class="pal-btn" data-pal="1">Fire</button>
+        <button class="pal-btn" data-pal="2">Ice</button>
+      </div>
+    </div>
+    <div id="locations">
+      <span class="section-label">Famous Regions</span>
+      <button class="loc-btn" data-preset="1">Seahorse Valley</button>
+      <button class="loc-btn" data-preset="2">Double Spiral</button>
+      <button class="loc-btn" data-preset="3">Mini Mandelbrot</button>
+      <button class="loc-btn" data-preset="4">Triple Spiral</button>
+      <button class="loc-btn" data-preset="5">Elephant Valley</button>
+      <button class="loc-btn" data-preset="6">Feigenbaum Point</button>
+      <button class="loc-btn" data-preset="7">Period-3 Bulb</button>
+      <button class="loc-btn" data-preset="8">Misiurewicz</button>
+      <button class="loc-btn" data-preset="9">Spiral Valley</button>
+      <button class="loc-btn" data-preset="10">Star Cluster</button>
+      <button class="loc-btn" data-preset="11">Deep Valley</button>
+      <button class="loc-btn" data-preset="12">Dragon's Tail</button>
+      <button class="loc-btn" data-preset="13">Quad Spiral</button>
+      <button class="loc-btn" data-preset="14">Baby Mandelbrot</button>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

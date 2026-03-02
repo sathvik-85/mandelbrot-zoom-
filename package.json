@@ -1,0 +1,17 @@
+{
+  "name": "mandelbrot-zoom",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "wasm": "wasm-pack build --target web --out-dir pkg",
+    "dev": "npm run wasm && vite",
+    "build": "npm run wasm && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "vite-plugin-wasm": "^3.3.0",
+    "vite-plugin-top-level-await": "^1.4.0"
+  }
+}

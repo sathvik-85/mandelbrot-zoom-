@@ -1,0 +1,6 @@
+target/
+pkg/
+node_modules/
+dist/
+.claude/
+*.pdf
