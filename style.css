@@ -20,15 +20,34 @@ canvas {
   cursor: crosshair;
 }
 
+/* ── Loading indicator (bottom-centre) ───────────────────────────────────── */
+#loading {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.9);
+  font: 11px/1 monospace;
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  padding: 5px 12px;
+  pointer-events: none;
+  user-select: none;
+  z-index: 50;
+}
+#loading.hidden { display: none; }
+
 /* ── HUD (bottom-left) ───────────────────────────────────────────────────── */
 #hud {
   position: fixed;
   bottom: 14px;
   left: 14px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.9);
   font: 11px/1.5 monospace;
   pointer-events: none;
   user-select: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.7);
 }
 
 /* ── Control panel (top-right) ───────────────────────────────────────────── */
@@ -49,10 +68,31 @@ canvas {
   align-items: center;
 }
 
-#pal-row {
-  display: flex;
-  gap: 4px;
-  flex: 1;
+/* Palette dropdown */
+#pal-select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.85);
+  font: 11px/1 monospace;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.4)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+}
+#pal-select:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #fff;
+}
+#pal-select option {
+  background: #111;
+  color: #fff;
 }
 
 #locations {
@@ -93,27 +133,101 @@ button:hover {
   color: #fff;
 }
 
-/* Reset button */
-#btn-home {
+/* Reset + Help buttons */
+#btn-home { flex-shrink: 0; padding: 6px 8px; }
+#btn-help {
   flex-shrink: 0;
-  padding: 6px 8px;
-}
-
-/* Palette buttons — equal width inside their row */
-.pal-btn {
-  flex: 1;
-  text-align: center;
-  padding: 5px 4px;
-  font-size: 10px;
-}
-
-.pal-btn.active {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.60);
-  color: #fff;
+  padding: 6px 9px;
+  font-weight: bold;
+  border-radius: 50%;
 }
 
 /* Location buttons — full width */
-.loc-btn {
+.loc-btn { width: 100%; }
+
+/* ── Help modal ─────────────────────────────────────────────────────────── */
+#modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+#modal-overlay.hidden { display: none; }
+
+#modal-box {
+  position: relative;
+  background: rgba(10, 10, 18, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  padding: 28px 28px 24px;
+  max-width: 560px;
   width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  color: rgba(255, 255, 255, 0.82);
+  font: 13px/1.6 monospace;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+
+#modal-close {
+  position: absolute;
+  top: 10px; right: 12px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+#modal-close:hover { color: #fff; background: none; }
+
+#modal-box h2 {
+  margin: 0 0 18px;
+  font-size: 16px;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+#modal-box h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5);
+  margin: 20px 0 8px;
+}
+#modal-box section:first-of-type h3 { margin-top: 0; }
+
+#modal-box p { margin: 0 0 8px; }
+#modal-box em { color: rgba(160,200,255,0.9); font-style: normal; }
+#modal-box strong { color: #fff; }
+
+.formula {
+  font-size: 15px;
+  text-align: center;
+  color: #fff;
+  padding: 10px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px;
+  margin: 8px 0 !important;
+  letter-spacing: 0.1em;
+}
+
+.tip-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 14px;
+  align-items: baseline;
+}
+.key {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 11px;
+  color: #fff;
+  white-space: nowrap;
 }

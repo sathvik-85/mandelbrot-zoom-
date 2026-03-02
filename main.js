@@ -54,6 +54,10 @@ async function run() {
     applyMode();
     resetCSS();
     if (useGL) {
+      // Cancel any pending WASM timers so they don't fire on the hidden canvas
+      clearTimeout(previewTimer);
+      clearTimeout(settleTimer);
+      showLoading(false);
       markGlDirty();
     } else {
       renderParallel();
@@ -87,10 +91,17 @@ async function run() {
     return [s, e + lo];
   }
 
-  // More iterations at deeper zoom — reveals boundary detail that 256 would miss.
-  // Halved cap (4000 vs 10000) for faster deep-zoom renders while still rich in detail.
+  // During preset fly-in animations we cap iterations low so the GPU keeps 60 fps.
+  let animating = false;
+
   function maxIter() {
-    return Math.min(Math.floor(150 + 80 * Math.log2(zoom + 1)), 4000);
+    const iter = Math.min(Math.floor(80 + 15 * Math.log2(zoom + 1)), 1200);
+    return animating ? Math.min(iter, 120) : iter;
+  }
+
+  // Loading indicator — shown only during WASM (CPU) renders
+  function showLoading(on) {
+    document.getElementById('loading').classList.toggle('hidden', !on);
   }
 
   // ── CSS transform: instant GPU visual feedback, zero compute ──────────────
@@ -202,6 +213,7 @@ async function run() {
   function renderParallel(doFullRes = true) {
     if (rendering) jobId++; // invalidate any in-flight strips
     rendering = true;
+    showLoading(true);
 
     // Pass 1 — instant blurry preview (~5–15 ms)
     renderAtQuality(0.25, (job1) => {
@@ -214,6 +226,7 @@ async function run() {
         // Pass 3 — crisp full resolution
         renderAtQuality(1.0, () => {
           rendering = false;
+          showLoading(false);
           updateHUD();
         });
       });
@@ -240,7 +253,8 @@ async function run() {
   ];
 
   // Smooth animated zoom toward a target coordinate
-  function animateTo(target, durationMs = 4000) {
+  function animateTo(target, durationMs = 2000) {
+    animating = true;
     const startCxHi = cx_hi, startCxLo = cx_lo;
     const startCyHi = cy_hi, startCyLo = cy_lo;
     const startZoom = zoom;
@@ -274,11 +288,12 @@ async function run() {
       if (t < 1) {
         requestAnimationFrame(step);
       } else {
+        animating = false;
         cx_hi = target.cx; cx_lo = 0;
         cy_hi = target.cy; cy_lo = 0;
         zoom  = target.zoom;
         checkMode();
-        if (useGL) glr.render(cx_hi, cx_lo, cy_hi, cy_lo, zoom, maxIter(), W, H, pal);
+        if (useGL) { glr.render(cx_hi, cx_lo, cy_hi, cy_lo, zoom, maxIter(), W, H, pal); updateHUD(); }
         else scheduleRender(0);
       }
     }
@@ -309,13 +324,21 @@ async function run() {
     });
   });
 
-  document.querySelectorAll('.pal-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      pal = parseInt(btn.dataset.pal);
-      document.querySelectorAll('.pal-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      if (useGL) markGlDirty(); else scheduleRender(0);
-    });
+  document.getElementById('pal-select').addEventListener('change', e => {
+    pal = parseInt(e.target.value);
+    if (useGL) markGlDirty(); else scheduleRender(0);
+  });
+
+  // ── Help modal ────────────────────────────────────────────────────────────
+  const modalOverlay = document.getElementById('modal-overlay');
+  document.getElementById('btn-help').addEventListener('click', () => {
+    modalOverlay.classList.remove('hidden');
+  });
+  document.getElementById('modal-close').addEventListener('click', () => {
+    modalOverlay.classList.add('hidden');
+  });
+  modalOverlay.addEventListener('click', e => {
+    if (e.target === modalOverlay) modalOverlay.classList.add('hidden');
   });
 
   // Start at home (full Mandelbrot view)
@@ -346,6 +369,7 @@ async function run() {
       vScale *= f;
       applyCSS();
       scheduleInteractionRender();
+      checkMode(); // switch back to GL if zoom dropped below threshold
     }
   }, { passive: false });
 
@@ -370,6 +394,7 @@ async function run() {
       vTy = drag.ty + dy;
       applyCSS();
       scheduleInteractionRender();
+      checkMode();
     }
   });
   window.addEventListener('mouseup', () => { drag = null; });

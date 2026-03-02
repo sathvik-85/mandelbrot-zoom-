@@ -303,23 +303,53 @@ fn palette(s: f64, max_iter: u32, pal: u32) -> [u8; 3] {
     let edge = 1.0 - (-s * 0.04).exp();
 
     let (r, g, b) = match pal {
-        // 0 · Nebula — vivid purple → teal → gold cycle (higher amplitude = more contrast)
+        // 0 · Nebula — vivid purple → teal → gold
         0 => (
             cos_channel(t, 0.5, 0.6, 1.0, 0.00),
             cos_channel(t, 0.5, 0.6, 1.0, 0.35),
             cos_channel(t, 0.5, 0.6, 1.0, 0.72),
         ),
-        // 1 · Fire — deep red → orange → bright yellow
+        // 1 · Fire — deep red → orange → yellow
         1 => (
             cos_channel(t, 0.75, 0.25, 1.0, 0.00),
             cos_channel(t, 0.30, 0.35, 1.0, 0.10),
             cos_channel(t, 0.05, 0.05, 1.0, 0.50),
         ),
         // 2 · Ice — navy → cyan → white
-        _ => (
+        2 => (
             cos_channel(t, 0.25, 0.25, 1.0, 0.55),
             cos_channel(t, 0.55, 0.45, 1.0, 0.70),
             cos_channel(t, 0.80, 0.20, 1.0, 0.00),
+        ),
+        // 3 · Gold — rich amber → bronze → cream
+        3 => (
+            cos_channel(t, 0.80, 0.20, 1.0, 0.05),
+            cos_channel(t, 0.55, 0.35, 1.0, 0.12),
+            cos_channel(t, 0.10, 0.10, 1.0, 0.45),
+        ),
+        // 4 · Ocean — deep navy → teal → seafoam
+        4 => (
+            cos_channel(t, 0.15, 0.15, 1.0, 0.50),
+            cos_channel(t, 0.45, 0.40, 1.0, 0.65),
+            cos_channel(t, 0.75, 0.25, 1.0, 0.00),
+        ),
+        // 5 · Sunset — violet → coral → amber
+        5 => (
+            cos_channel(t, 0.60, 0.40, 1.0, 0.00),
+            cos_channel(t, 0.20, 0.30, 1.0, 0.25),
+            cos_channel(t, 0.50, 0.40, 1.0, 0.58),
+        ),
+        // 6 · Forest — earthy green → olive → moss
+        6 => (
+            cos_channel(t, 0.25, 0.25, 1.0, 0.15),
+            cos_channel(t, 0.55, 0.35, 1.0, 0.00),
+            cos_channel(t, 0.10, 0.12, 1.0, 0.40),
+        ),
+        // 7 · Psychedelic — maximum saturation full rainbow
+        _ => (
+            cos_channel(t * 3.0, 0.5, 0.5, 1.0, 0.00),
+            cos_channel(t * 3.0, 0.5, 0.5, 1.0, 0.33),
+            cos_channel(t * 3.0, 0.5, 0.5, 1.0, 0.67),
         ),
     };
 

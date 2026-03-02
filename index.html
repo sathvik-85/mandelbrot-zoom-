@@ -14,6 +14,9 @@
   <!-- Transparent overlay so mouse/touch events work regardless of which canvas is active -->
   <div id="evt"></div>
 
+  <!-- Loading indicator — shown only during slow WASM renders -->
+  <div id="loading" class="hidden">Computing…</div>
+
   <!-- HUD: coords bottom-left -->
   <div id="hud">
     <span id="coords"></span>
@@ -23,12 +26,21 @@
   <div id="panel">
     <div id="top-row">
       <button id="btn-home" title="Zoom all the way out">⌂ Reset</button>
-      <div id="pal-row">
-        <button class="pal-btn active" data-pal="0">Nebula</button>
-        <button class="pal-btn" data-pal="1">Fire</button>
-        <button class="pal-btn" data-pal="2">Ice</button>
-      </div>
+      <button id="btn-help" title="Help & Info">?</button>
     </div>
+
+    <!-- Colour palette dropdown -->
+    <select id="pal-select" title="Choose colour palette">
+      <option value="0">🌌 Nebula</option>
+      <option value="1">🔥 Fire</option>
+      <option value="2">❄️ Ice</option>
+      <option value="3">✨ Gold</option>
+      <option value="4">🌊 Ocean</option>
+      <option value="5">🌅 Sunset</option>
+      <option value="6">🌿 Forest</option>
+      <option value="7">🎆 Psychedelic</option>
+    </select>
+
     <div id="locations">
       <span class="section-label">Famous Regions</span>
       <button class="loc-btn" data-preset="1">Seahorse Valley</button>
@@ -45,6 +57,71 @@
       <button class="loc-btn" data-preset="12">Dragon's Tail</button>
       <button class="loc-btn" data-preset="13">Quad Spiral</button>
       <button class="loc-btn" data-preset="14">Baby Mandelbrot</button>
+    </div>
+  </div>
+
+  <!-- ── Help / Tutorial modal ─────────────────────────────────────────── -->
+  <div id="modal-overlay" class="hidden">
+    <div id="modal-box">
+      <button id="modal-close">✕</button>
+
+      <h2>Mandelbrot Explorer</h2>
+
+      <section>
+        <h3>What is the Mandelbrot Set?</h3>
+        <p>
+          The Mandelbrot set is a famous fractal — a mathematical object with
+          infinite complexity at every scale. It is defined by a simple rule:
+        </p>
+        <p class="formula">z → z² + c</p>
+        <p>
+          Starting at z = 0, repeatedly square the result and add the complex
+          number c (which represents a point on the 2D plane). If this sequence
+          stays bounded forever, the point c is <em>inside</em> the set (shown
+          black). If it escapes to infinity, it is <em>outside</em> — and the
+          color shows how quickly it escaped.
+        </p>
+        <p>
+          The boundary between inside and outside is infinitely detailed. No
+          matter how deep you zoom, you will always find new spirals, filaments,
+          and miniature copies of the whole set.
+        </p>
+      </section>
+
+      <section>
+        <h3>How to Navigate</h3>
+        <div class="tip-grid">
+          <span class="key">Scroll wheel</span><span>Zoom in / out at cursor</span>
+          <span class="key">Click + drag</span><span>Pan around</span>
+          <span class="key">Pinch</span><span>Zoom on touch screen</span>
+          <span class="key">R</span><span>Reset to home view</span>
+          <span class="key">1 – 9</span><span>Jump to preset locations</span>
+        </div>
+      </section>
+
+      <section>
+        <h3>What the HUD Shows</h3>
+        <div class="tip-grid">
+          <span class="key">x / y</span><span>Real and imaginary coordinates of the centre</span>
+          <span class="key">zoom</span><span>Magnification level (1 = full set, 1e10 = very deep)</span>
+          <span class="key">iter</span><span>Max iterations computed per pixel — higher = more detail but slower</span>
+          <span class="key">cores</span><span>CPU workers used for deep-zoom computation</span>
+        </div>
+      </section>
+
+      <section>
+        <h3>Rendering Technology</h3>
+        <p>
+          At normal zoom levels a <strong>WebGL2 GPU shader</strong> computes
+          every pixel in parallel — giving smooth 60 fps zoom and pan.
+          At very deep zoom (&gt; 50 billion×) it switches to a
+          <strong>Rust / WebAssembly</strong> engine that uses
+          <em>perturbation theory</em> and <em>double-double arithmetic</em>
+          to maintain precision far beyond what ordinary floating-point allows.
+          All computation happens entirely in your browser — nothing is sent
+          to a server.
+        </p>
+      </section>
     </div>
   </div>
 

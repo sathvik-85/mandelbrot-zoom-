@@ -39,17 +39,38 @@ vec3 cospal(float sn, float mi, int p) {
     const float TAU = 6.2831853072;
     vec3 c;
     if (p == 0) {                                      // Nebula
-        c = vec3(0.5 + 0.6 * cos(TAU * (t + 0.00)),
-                 0.5 + 0.6 * cos(TAU * (t + 0.35)),
-                 0.5 + 0.6 * cos(TAU * (t + 0.72)));
+        c = vec3(0.5  + 0.6  * cos(TAU * (t + 0.00)),
+                 0.5  + 0.6  * cos(TAU * (t + 0.35)),
+                 0.5  + 0.6  * cos(TAU * (t + 0.72)));
     } else if (p == 1) {                               // Fire
         c = vec3(0.75 + 0.25 * cos(TAU *  t),
                  0.30 + 0.35 * cos(TAU * (t + 0.10)),
                  0.05 + 0.05 * cos(TAU * (t + 0.50)));
-    } else {                                           // Ice
+    } else if (p == 2) {                               // Ice
         c = vec3(0.25 + 0.25 * cos(TAU * (t + 0.55)),
                  0.55 + 0.45 * cos(TAU * (t + 0.70)),
                  0.80 + 0.20 * cos(TAU *  t));
+    } else if (p == 3) {                               // Gold
+        c = vec3(0.80 + 0.20 * cos(TAU * (t + 0.05)),
+                 0.55 + 0.35 * cos(TAU * (t + 0.12)),
+                 0.10 + 0.10 * cos(TAU * (t + 0.45)));
+    } else if (p == 4) {                               // Ocean
+        c = vec3(0.15 + 0.15 * cos(TAU * (t + 0.50)),
+                 0.45 + 0.40 * cos(TAU * (t + 0.65)),
+                 0.75 + 0.25 * cos(TAU *  t));
+    } else if (p == 5) {                               // Sunset
+        c = vec3(0.60 + 0.40 * cos(TAU *  t),
+                 0.20 + 0.30 * cos(TAU * (t + 0.25)),
+                 0.50 + 0.40 * cos(TAU * (t + 0.58)));
+    } else if (p == 6) {                               // Forest
+        c = vec3(0.25 + 0.25 * cos(TAU * (t + 0.15)),
+                 0.55 + 0.35 * cos(TAU *  t),
+                 0.10 + 0.12 * cos(TAU * (t + 0.40)));
+    } else {                                           // Psychedelic
+        float tp = t * 3.0;
+        c = vec3(0.5  + 0.5  * cos(TAU *  tp),
+                 0.5  + 0.5  * cos(TAU * (tp + 0.33)),
+                 0.5  + 0.5  * cos(TAU * (tp + 0.67)));
     }
     return c * edge;
 }
